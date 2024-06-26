@@ -5,4 +5,4 @@ matplotlib
 streamlit-lottie
 Pillow
 plotly
-PyPDF2
+pdf2image
