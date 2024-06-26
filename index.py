@@ -2,11 +2,11 @@ import os
 import io
 import base64
 from PIL import Image
-import pdf2image
+import streamlit as st
 import google.generativeai as genai
 import re
 import plotly.graph_objects as go
-import streamlit as st
+import PyPDF2 as pdf
 from dotenv import load_dotenv
 
 # Set Streamlit page configuration
@@ -19,49 +19,48 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def get_gemini_response(input, pdf_content, prompt):
-    model = genai.GenerativeModel('gemini-pro-vision')
+    model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content([input, pdf_content[0], prompt])
     return response.text
 
-def input_pdf_setup(uploaded_file, poppler_path):
-    if uploaded_file is not None:
-        try:
-            images = pdf2image.convert_from_bytes(uploaded_file.read(), poppler_path=poppler_path)
-            first_page = images[0]
-            img_byte_arr = io.BytesIO()
-            first_page.save(img_byte_arr, format='JPEG')
-            img_byte_arr = img_byte_arr.getvalue()
+def input_pdf_text(uploaded_file):
+    reader=pdf.PdfReader(uploaded_file)
+    text=""
+    # for multiple page read
+    for page in range(len(reader.pages)):
+        page = reader.pages[page]
+        text +=str(page.extract_text())
 
-            pdf_parts = [
-                {
-                    "mime_type": "image/jpeg",
-                    "data": base64.b64encode(img_byte_arr).decode()
-                }
-            ]
-            return pdf_parts
-        except pdf2image.exceptions.PDFInfoNotInstalledError as e:
-            st.error(f"PDFInfoNotInstalledError: {e}")
-            raise e
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-            raise e
-    else:
-        raise FileNotFoundError("No file uploaded")
+    return text 
 
-# Specify the path to the Poppler binaries
-poppler_path = os.getenv("POPPLER_PATH")
-pop_path = poppler_path.replace("\\\\", "\\") if poppler_path else None
-
+# def input_pdf_setup(uploaded_file):
+#     if uploaded_file is not None:
+#         try:
+#             images = pdf_to_images(uploaded_file)
+#             pdf_parts = [
+#                 {
+#                     "mime_type": "image/jpeg",
+#                     "data": base64.b64encode(img).decode()
+#                 } for img in images
+#             ]
+#             return pdf_parts
+#         except Exception as e:
+#             st.error(f"An error occurred: {e}")
+#             raise e
+#     else:
+#         raise FileNotFoundError("No file uploaded")
+    
 # Sidebar setup
-# logo='logo.png'
-# st.sidebar.image(logo, width=150, clamp=True)
 st.sidebar.header(":blue[_Resume Analyser_]", divider="blue")
 st.sidebar.subheader("Upload Your Resume and Job Description")
 input_text = st.sidebar.text_area("Job Description:", key="input")
+
 uploaded_file = st.sidebar.file_uploader("Upload your resume (PDF)...", type=["pdf"])
 
 if uploaded_file is not None:
     st.sidebar.success("PDF Uploaded Successfully")
+    file_path = os.path.abspath(uploaded_file.name)  # Get absolute path of uploaded file
+
 
 # Buttons in sidebar
 submit1 = st.sidebar.button("How is my Resume")
@@ -69,20 +68,20 @@ submit2 = st.sidebar.button("Help Me Improve My Resume")
 submit3 = st.sidebar.button("ATS Score")
 
 input_prompt1 = """
-Extract the technical skills, soft skills and important information only from the resume. 
-Ensure to categorize each piece of information explicitly stated in the resume in form of table and tells overall how the resume according to the given job description.
+Extract the technical skills, soft skills, and important information only from the resume. 
+Ensure to categorize each piece of information explicitly stated in the resume in form of a table and tell overall how the resume matches the given job description.
 """
 
 input_prompt2 = """
-Analyze the resume against the provided job description and Identify the keywords and skills mentioned in the job description that are missing in the resume. 
-Prioritize these based on their relevance to the job and show them in table. Provide suggestions for incorporating these keywords into the resume effectively, 
-with emphasis on achievements and quantifiable results, also tell some ways to improve resume in points.
+Analyze the resume against the provided job description and identify the keywords and skills mentioned in the job description that are missing in the resume. 
+Prioritize these based on their relevance to the job and show them in a table. Provide suggestions for incorporating these keywords into the resume effectively, 
+with emphasis on achievements and quantifiable results. Also, suggest ways to improve the resume in points.
 """
 
 input_prompt3 = """
-You are an skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality, 
-your task is to evaluate the resume against the provided job description. give me the percentage of match if the resume matches
-the job description. First the output should come as percentage and then keywords missing and last final thoughts.
+You are a skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality. 
+Your task is to evaluate the resume against the provided job description. Give me the percentage match if the resume matches
+the job description. First, the output should come as a percentage and then keywords missing, and lastly, final thoughts.
 """
 
 def display_response(response, title):
@@ -116,43 +115,44 @@ def show_gauge_chart(percentage):
 
     st.plotly_chart(fig, use_container_width=False)
 
+
 if submit1:
-    if uploaded_file is not None:
-        with st.spinner('Analysing.....'):
+    if uploaded_file is None:
+        st.error("Please upload your resume (PDF) before clicking 'How is my Resume'.")
+    else:
+        with st.spinner('Analyzing...'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, pop_path)
+                pdf_content = input_pdf_text(uploaded_file)
                 response = get_gemini_response(input_prompt1, pdf_content, input_text)
-                st.success('Analysing complete!')
+                st.success('Analysis complete!')
                 display_response(response, "Resume Analysis")
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
-                st.error(f"An error occurred while Analysing the PDF: {e}")
-    else:
-        st.error("Please upload the resume")
+                st.error(f"An error occurred while analyzing the PDF: {e}")
 
 if submit2:
     if uploaded_file is not None:
-        with st.spinner('Analysing.....'):
+        with st.spinner('Analyzing...'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, pop_path)
+                pdf_content = input_pdf_text(uploaded_file)
                 response = get_gemini_response(input_prompt2, pdf_content, input_text)
-                st.success('Analysing complete!')
+                st.success('Analysis complete!')
                 display_response(response, "Suggested Skills to Strengthen Your Resume")
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
-                st.error(f"An error occurred while Analysing the PDF: {e}")
+                st.error(f"An error occurred while analyzing the PDF: {e}")
     else:
         st.error("Please upload the resume")
 
 if submit3:
     if uploaded_file is not None:
-        with st.spinner('Analysing.....'):
+        with st.spinner('Analyzing...'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, pop_path)
+                pdf_content = input_pdf_text(uploaded_file)
                 response = get_gemini_response(input_prompt3, pdf_content, input_text)
-                st.success('Analysing complete!')
+                st.success('Analysis complete!')
                 # Extract percentage match from response
                 match_percentage = extract_percentage(response)
                 if match_percentage is not None:
@@ -164,6 +164,6 @@ if submit3:
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
-                st.error(f"An error occurred while Analysing the PDF: {e}")
+                st.error(f"An error occurred while analyzing the PDF: {e}")
     else:
         st.error("Please upload the resume")
