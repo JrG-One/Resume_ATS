@@ -1,5 +1,3 @@
-from dotenv import load_dotenv
-import streamlit as st
 import os
 import io
 import base64
@@ -8,6 +6,11 @@ import pdf2image
 import google.generativeai as genai
 import re
 import plotly.graph_objects as go
+import streamlit as st
+from dotenv import load_dotenv
+
+# Set Streamlit page configuration
+st.set_page_config(page_title="Your Resume Expert", layout="wide", initial_sidebar_state="expanded")
 
 # Load environment variables
 load_dotenv()
@@ -47,8 +50,7 @@ def input_pdf_setup(uploaded_file, poppler_path):
 
 # Specify the path to the Poppler binaries
 poppler_path = os.getenv("POPPLER_PATH")
-
-st.set_page_config(page_title="Your Resume Expert", layout="wide", initial_sidebar_state="expanded",)
+pop_path = poppler_path.replace("\\\\", "\\") if poppler_path else None
 
 # Sidebar setup
 # logo='logo.png'
@@ -114,26 +116,11 @@ def show_gauge_chart(percentage):
 
     st.plotly_chart(fig, use_container_width=False)
 
-# def custom_spinner(size=50):
-#     spinner_html = f"""
-#     <div style='text-align: center; padding: 10px; justify-content: center;'>
-#         <div class="loader" style="border-top: {size}px solid #3498db; border-right: {size}px solid transparent; border-radius: 50%; width: {size}px; height: {size}px; animation: spin 1s linear infinite;"></div>
-#     </div>
-#     <style>
-#         @keyframes spin {{
-#             0% {{ transform: rotate(0deg); }}
-#             100% {{ transform: rotate(360deg); }}
-#         }}
-#     </style>
-#     """
-#     st.markdown(spinner_html, unsafe_allow_html=True)
-
 if submit1:
     if uploaded_file is not None:
         with st.spinner('Analysing.....'):
-            # custom_spinner(size=250)
             try:
-                pdf_content = input_pdf_setup(uploaded_file, poppler_path)
+                pdf_content = input_pdf_setup(uploaded_file, pop_path)
                 response = get_gemini_response(input_prompt1, pdf_content, input_text)
                 st.success('Analysing complete!')
                 display_response(response, "Resume Analysis")
@@ -148,7 +135,7 @@ if submit2:
     if uploaded_file is not None:
         with st.spinner('Analysing.....'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, poppler_path)
+                pdf_content = input_pdf_setup(uploaded_file, pop_path)
                 response = get_gemini_response(input_prompt2, pdf_content, input_text)
                 st.success('Analysing complete!')
                 display_response(response, "Suggested Skills to Strengthen Your Resume")
@@ -163,16 +150,16 @@ if submit3:
     if uploaded_file is not None:
         with st.spinner('Analysing.....'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, poppler_path)
+                pdf_content = input_pdf_setup(uploaded_file, pop_path)
                 response = get_gemini_response(input_prompt3, pdf_content, input_text)
-
+                st.success('Analysing complete!')
                 # Extract percentage match from response
                 match_percentage = extract_percentage(response)
                 if match_percentage is not None:
                     st.subheader("Here is your Resume Score")
                     st.metric(label="Match Percentage", value=f"{match_percentage}%")
                     show_gauge_chart(match_percentage)
-                st.success('Analysing complete!')
+                
                 display_response(response, "Resume & Job Description Matching")
             except FileNotFoundError:
                 st.error("Please upload the resume")
