@@ -46,7 +46,7 @@ def input_pdf_setup(uploaded_file, poppler_path):
         raise FileNotFoundError("No file uploaded")
 
 # Specify the path to the Poppler binaries
-poppler_path = "./bin"
+poppler_path = os.getenv("POPPLER_PATH")
 
 st.set_page_config(page_title="Your Resume Expert", layout="wide", initial_sidebar_state="expanded")
 
@@ -180,3 +180,10 @@ if submit3:
                 st.error(f"An error occurred while Analysing the PDF: {e}")
     else:
         st.error("Please upload the resume")
+
+footer = """
+<div style='text-align: center; padding: 10px; bottom:0;'>
+   <p>© 2024 <a href="https://github.com/JrG-One/" target="_blank" style='text-decoration: none; color: inherit;'> Jr.G-One</a></p>
+</div>
+"""
+st.markdown(footer, unsafe_allow_html=True)
