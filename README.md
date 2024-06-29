@@ -81,7 +81,7 @@ streamlit run app.py
 - **Python**: Core programming language.
 - **PDF2Image**: To convert PDF to images.
 - **PIL**: To handle image processing.
-- **Google Generative AI**: For generating content based on your resume and job description.
+- **Google Generative AI (Gemini Pro Vision Model)**: For generating content based on your resume and job description.
 - **Plotly**: For creating beautiful gauge charts.
 
 ## 👨‍💻 Author
