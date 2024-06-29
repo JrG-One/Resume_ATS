@@ -1,4 +1,3 @@
-```markdown
 # 🌟 Your Resume Expert 🌟
 
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
@@ -66,9 +65,9 @@ streamlit run app.py
 
 ## 🖼️ Screenshots
 
-![Homepage](screenshots/homepage.png)
-![Analysis](screenshots/analysis.png)
-![Result](screenshots/result.png)
+![Homepage](Screenshots/image.png)
+![Analysis](Screenshots/image2.png)
+![Result](Screenshots/image3.png)
 
 ## 📝 How to Use
 
@@ -95,4 +94,3 @@ streamlit run app.py
 ## 🌟 Acknowledgments
 
 - Special thanks to the developers of [Streamlit](https://streamlit.io/), [pdf2image](https://github.com/Belval/pdf2image), [PIL](https://pillow.readthedocs.io/), and [Plotly](https://plotly.com/python/) for their awesome libraries.
-```
