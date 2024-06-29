@@ -1,4 +1,4 @@
-#🌟 Your Resume Expert 🌟
+# 🌟 Your Resume Expert 🌟
 
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
@@ -9,7 +9,7 @@
 
 Welcome to **Your Resume Expert**! This application analyzes your resume against job descriptions, provides insights, and helps you improve your resume to match job requirements better. 🚀
 
-##⚠️ Prerequisites
+## ⚠️ Prerequisites
 
 1. **Poppler must be installed on your OS**
    - Download Poppler binaries suitable for your operating system from [Poppler's official website](https://poppler.freedesktop.org/).
@@ -19,7 +19,7 @@ Welcome to **Your Resume Expert**! This application analyzes your resume against
    - Generate your own API key from the [Google Cloud Console](https://console.cloud.google.com/).
    - Enable the Google Generative AI API for your project.
 
-##🛠️ Installation
+## 🛠️ Installation
 
 1. Clone the repository:
 
@@ -44,7 +44,7 @@ Welcome to **Your Resume Expert**! This application analyzes your resume against
     GOOGLE_API_KEY=your_google_api_key
     POPPLER_PATH="C:/Program Files/poppler-24.02.0/Library/bin"  # or the path where you placed your Poppler binaries
 
-##🚀 Running the Application
+## 🚀 Running the Application
 
 To start the Streamlit application, run:
 
