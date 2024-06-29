@@ -86,7 +86,7 @@ streamlit run app.py
 
 ## 👨‍💻 Author
 
-**Jr, G-One**
+**Ojaswa Varshney**
 
 - [GitHub](https://github.com/JrG-One)
 - [LinkedIn](https://www.linkedin.com/in/ojaswavarshney/)
