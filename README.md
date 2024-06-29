@@ -1,3 +1,4 @@
+```markdown
 # 🌟 Your Resume Expert 🌟
 
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
@@ -26,23 +27,28 @@ Welcome to **Your Resume Expert**! This application analyzes your resume against
    ```bash
    git clone https://github.com/JrG-One/Resume_ATS.git
    cd your-resume-expert
+   ```
 
 2. Create and activate a virtual environment:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
 3. Install the required packages:
 
-  ```bash
-    pip install -r requirements.txt
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. Create a .env file in the project directory and add your Google API Key and Poppler path:
 
-    ```bash
-    # This is how your env look like 
-    GOOGLE_API_KEY=your_google_api_key
-    POPPLER_PATH="C:/Program Files/poppler-24.02.0/Library/bin"  # or the path where you placed your Poppler binaries
+   ```bash
+   # .env file contents
+   GOOGLE_API_KEY=your_google_api_key
+   POPPLER_PATH="./bin"  # or the path where you placed your Poppler binaries
+   ```
 
 ## 🚀 Running the Application
 
@@ -50,6 +56,7 @@ To start the Streamlit application, run:
 
 ```bash
 streamlit run app.py
+```
 
 ## 🎨 Features
 
@@ -59,9 +66,9 @@ streamlit run app.py
 
 ## 🖼️ Screenshots
 
-![Homepage](Screenshots/image.png)
-![Analysing....](Screenshots/image2.png)
-![Final Result](Screenshots/image3.png)
+![Homepage](screenshots/homepage.png)
+![Analysis](screenshots/analysis.png)
+![Result](screenshots/result.png)
 
 ## 📝 How to Use
 
@@ -88,5 +95,4 @@ streamlit run app.py
 ## 🌟 Acknowledgments
 
 - Special thanks to the developers of [Streamlit](https://streamlit.io/), [pdf2image](https://github.com/Belval/pdf2image), [PIL](https://pillow.readthedocs.io/), and [Plotly](https://plotly.com/python/) for their awesome libraries.
-
-
+```
