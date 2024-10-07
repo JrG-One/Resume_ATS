@@ -4,6 +4,7 @@ import os
 import io
 import base64
 from PIL import Image
+# from pdf2image import convert_from_path
 import pdf2image
 import google.generativeai as genai
 import re
@@ -16,19 +17,21 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def get_gemini_response(input, pdf_content, prompt):
-    model = genai.GenerativeModel('gemini-pro-vision')
+    model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content([input, pdf_content[0], prompt])
     return response.text
 
-def input_pdf_setup(uploaded_file, poppler_path):
+def input_pdf_setup(uploaded_file):
     if uploaded_file is not None:
         try:
-            images = pdf2image.convert_from_bytes(uploaded_file.read(), poppler_path=poppler_path)
+            # Convert PDF to images using poppler-utils installed via apt-get
+            images = pdf2image.convert_from_bytes(uploaded_file.read())  # Removed poppler_path
             first_page = images[0]
             img_byte_arr = io.BytesIO()
             first_page.save(img_byte_arr, format='JPEG')
             img_byte_arr = img_byte_arr.getvalue()
 
+            # Prepare the image for processing
             pdf_parts = [
                 {
                     "mime_type": "image/jpeg",
@@ -44,9 +47,6 @@ def input_pdf_setup(uploaded_file, poppler_path):
             raise e
     else:
         raise FileNotFoundError("No file uploaded")
-
-# Specify the path to the Poppler binaries
-poppler_path = os.getenv("POPPLER_PATH")
 
 st.set_page_config(page_title="Your Resume Expert", layout="wide", initial_sidebar_state="expanded")
 
@@ -131,9 +131,8 @@ def show_gauge_chart(percentage):
 if submit1:
     if uploaded_file is not None:
         with st.spinner('Analysing.....'):
-            # custom_spinner(size=250)
             try:
-                pdf_content = input_pdf_setup(uploaded_file, poppler_path)
+                pdf_content = input_pdf_setup(uploaded_file)
                 response = get_gemini_response(input_prompt1, pdf_content, input_text)
                 st.success('Analysing complete!')
                 display_response(response, "Resume Analysis")
@@ -148,10 +147,10 @@ if submit2:
     if uploaded_file is not None:
         with st.spinner('Analysing.....'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, poppler_path)
+                pdf_content = input_pdf_setup(uploaded_file)
                 response = get_gemini_response(input_prompt2, pdf_content, input_text)
                 st.success('Analysing complete!')
-                display_response(response, "Suggested Skills to Strengthen Your Resume")
+                display_response(response, "Resume Analysis")
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
@@ -163,17 +162,10 @@ if submit3:
     if uploaded_file is not None:
         with st.spinner('Analysing.....'):
             try:
-                pdf_content = input_pdf_setup(uploaded_file, poppler_path)
+                pdf_content = input_pdf_setup(uploaded_file)
                 response = get_gemini_response(input_prompt3, pdf_content, input_text)
-
-                # Extract percentage match from response
-                match_percentage = extract_percentage(response)
-                if match_percentage is not None:
-                    st.subheader("Here is your Resume Score")
-                    st.metric(label="Match Percentage", value=f"{match_percentage}%")
-                    show_gauge_chart(match_percentage)
                 st.success('Analysing complete!')
-                display_response(response, "Resume & Job Description Matching")
+                display_response(response, "Resume Analysis")
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
