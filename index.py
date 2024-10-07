@@ -150,7 +150,7 @@ if submit2:
                 pdf_content = input_pdf_setup(uploaded_file)
                 response = get_gemini_response(input_prompt2, pdf_content, input_text)
                 st.success('Analysing complete!')
-                display_response(response, "Resume Analysis")
+                display_response(response, "Suggested Skills to Strengthen Your Resume")
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
@@ -164,8 +164,14 @@ if submit3:
             try:
                 pdf_content = input_pdf_setup(uploaded_file)
                 response = get_gemini_response(input_prompt3, pdf_content, input_text)
+                # Extract percentage match from response
+                match_percentage = extract_percentage(response)
+                if match_percentage is not None:
+                    st.subheader("Here is your Resume Score")
+                    st.metric(label="Match Percentage", value=f"{match_percentage}%")
+                    show_gauge_chart(match_percentage)
                 st.success('Analysing complete!')
-                display_response(response, "Resume Analysis")
+                display_response(response, "Resume & Job Description Matching")
             except FileNotFoundError:
                 st.error("Please upload the resume")
             except Exception as e:
